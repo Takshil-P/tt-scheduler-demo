@@ -19,6 +19,8 @@ app.get("/", (req, res) => {
 
 app.use("/api", playerRoutes);
 app.use("/api", matchRoutes);
+
+
 connectDB().then(() => {
   app.listen(PORT, () => console.log(`Server running on port ${PORT} 🚀`));
 });

@@ -1,5 +1,11 @@
 import express from "express";
-import { scheduleMatches, getMatches } from "../controllers/matchController.js";
+import {
+  scheduleMatches,
+  getMatches,
+  updateMatch,
+  scheduleNextRound,
+  resetTournament,
+} from "../controllers/matchController.js";
 
 const router = express.Router();
 
@@ -8,5 +14,14 @@ router.post("/matches/schedule", scheduleMatches);
 
 // Get all matches
 router.get("/matches", getMatches);
+
+// Update a match (e.g., set the winner)
+router.patch("/matches/:matchId", updateMatch);
+
+// Schedule the next round
+router.post("/matches/next-round", scheduleNextRound);
+
+// Reset the tournament
+router.delete("/matches/reset", resetTournament);
 
 export default router;
