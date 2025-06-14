@@ -1,6 +1,9 @@
-import React from "react";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const HomeComponent = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="relative bg-gradient-to-r from-teal-500 to-blue-600 h-screen flex items-center justify-center text-white">
       {/* Overlay for better text readability */}
@@ -14,7 +17,10 @@ const HomeComponent = () => {
         <p className="text-xl md:text-2xl mb-8">
           Schedule Your Table Tennis Tournaments with Ease and Excitement!
         </p>
-        <button className="bg-white text-teal-600 px-6 py-3 rounded-full font-semibold text-lg hover:bg-teal-100 transition duration-300">
+        <button
+          onClick={() => navigate('/Sports-Hub')}
+          className="bg-white text-teal-600 px-6 py-3 rounded-full font-semibold text-lg hover:bg-teal-100 dark:bg-gray-800 dark:text-teal-400 dark:hover:bg-gray-700 transition duration-300"
+        >
           Explore Now
         </button>
       </div>
