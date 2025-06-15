@@ -1,35 +1,4 @@
-// import React from "react";
-
-// const Header = () => {
-//   return (
-//     <header className="bg-teal-600 text-white p-4 shadow-md">
-//       <div className="container mx-auto flex justify-between items-center">
-//         <h1 className="text-2xl font-bold">Table Tennis Scheduler</h1>
-//         <nav>
-//           <ul className="flex space-x-6">
-//             <li>
-//               <a href="#" className="hover:text-gray-200 font-medium">
-//                 Home
-//               </a>
-//             </li>
-//             <li>
-//               <a href="#" className="hover:text-gray-200 font-medium">
-//                 Scheduler
-//               </a>
-//             </li>
-//             <li>
-//               <a href="#" className="hover:text-gray-200 font-medium">
-//                 Tournament
-//               </a>
-//             </li>
-//           </ul>
-//         </nav>
-//       </div>
-//     </header>
-//   );
-// };
-
-// export default Header;
+// this is the header component before claude
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -91,3 +60,7 @@ const Header = ({ toggleDarkMode, isDarkMode }) => {
 };
 
 export default Header;
+
+
+
+
