@@ -8,7 +8,7 @@ const AddPlayerForm = ({ onPlayerAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5050/api/players', {
+      const response = await axios.post('https://project-v1-2-1.onrender.com/api/players', {
         name,
         rank: rank ? Number(rank) : null,
       });
