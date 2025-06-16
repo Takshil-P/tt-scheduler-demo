@@ -1,5 +1,46 @@
 import Player from "../models/Player.js";
 import Match from "../models/Match.js";
+import ShuffledPlayer from "../models/ShuffledPlayer.js";
+
+// Helper function to assign byes in a structured order
+function getStructuredByePlayers(shuffledPlayers, byesNeeded) {
+  if (byesNeeded === 0) return [];
+
+  const n = shuffledPlayers.length;
+  const upperHalfSize = Math.ceil((n + 1) / 2); // (n+1)/2 for upper half
+  const lowerHalfSize = n - upperHalfSize; // Remaining for lower half
+
+  const upperHalf = shuffledPlayers.slice(0, upperHalfSize);
+  const lowerHalf = shuffledPlayers.slice(upperHalfSize);
+
+  const byePlayers = [];
+  let lowerIndexStart = 0; // Start of lower half
+  let lowerIndexEnd = lowerHalf.length - 1; // End of lower half
+  let upperIndexStart = 0; // Start of upper half
+  let upperIndexEnd = upperHalf.length - 1; // End of upper half
+  let turn = 0;
+
+  // Assign byes in the pattern: last lower, first upper, first lower, last upper, ...
+  while (byePlayers.length < byesNeeded) {
+    if (turn % 4 === 0 && lowerIndexEnd >= lowerIndexStart) {
+      byePlayers.push(lowerHalf[lowerIndexEnd--]); // Last of lower half
+    } else if (turn % 4 === 1 && upperIndexStart <= upperIndexEnd) {
+      byePlayers.push(upperHalf[upperIndexStart++]); // First of upper half
+    } else if (turn % 4 === 2 && lowerIndexStart <= lowerIndexEnd) {
+      byePlayers.push(lowerHalf[lowerIndexStart++]); // First of lower half
+    } else if (turn % 4 === 3 && upperIndexEnd >= upperIndexStart) {
+      byePlayers.push(upperHalf[upperIndexEnd--]); // Last of upper half
+    } else {
+      console.warn("Not enough players to assign all byes. Adjusting...");
+      break;
+    }
+    turn++;
+  }
+
+  // Log bye players for debugging
+  console.log("Bye players:", byePlayers.map(p => p.name));
+  return byePlayers;
+}
 
 export const scheduleMatches = async (req, res) => {
   try {
@@ -10,39 +51,64 @@ export const scheduleMatches = async (req, res) => {
         .json({ error: "At least 2 players are required to schedule matches" });
     }
 
+    // Calculate total slots and byes needed
     const totalSlots = Math.pow(2, Math.ceil(Math.log2(players.length)));
     const byesNeeded = totalSlots - players.length;
 
+    // Shuffle players randomly
     const shuffledPlayers = players.sort(() => Math.random() - 0.5);
 
+    // Get players who will receive byes
+    const byePlayers = getStructuredByePlayers(shuffledPlayers, byesNeeded);
+
+    // Save shuffled players to ShuffledPlayer collection
+    const shuffledPlayerDocs = shuffledPlayers.map((player, index) => {
+      const isBye = byePlayers.includes(player);
+      const byeOrder = isBye ? byePlayers.indexOf(player) + 1 : 0;
+      return {
+        player: player._id,
+        name: player.name, // Store player's name
+        position: index + 1, // 1-based indexing
+        isBye,
+        byeOrder,
+        round: 1,
+      };
+    });
+    await ShuffledPlayer.insertMany(shuffledPlayerDocs);
+
+    // Filter out players who didn't get byes
+    const remainingPlayers = shuffledPlayers.filter(
+      (player) => !byePlayers.includes(player)
+    );
+
     const matches = [];
-    let playerIndex = 0;
 
     // Assign byes and set winner immediately
-    for (let i = 0; i < byesNeeded; i++) {
-      const match = new Match({
-        player1: shuffledPlayers[playerIndex]._id,
-        player2: null,
-        round: 1,
-        isGivenBye: true,
-        winner: shuffledPlayers[playerIndex]._id, // Set winner to player1
-      });
-      matches.push(match);
-      playerIndex++;
+    for (const player of byePlayers) {
+      matches.push(
+        new Match({
+          player1: player._id,
+          player2: null,
+          round: 1,
+          isGivenBye: true,
+          winner: player._id,
+        })
+      );
     }
 
     // Pair remaining players
-    while (playerIndex < shuffledPlayers.length - 1) {
-      const match = new Match({
-        player1: shuffledPlayers[playerIndex]._id,
-        player2: shuffledPlayers[playerIndex + 1]._id,
-        round: 1,
-        isGivenBye: false,
-      });
-      matches.push(match);
-      playerIndex += 2;
+    for (let i = 0; i < remainingPlayers.length - 1; i += 2) {
+      matches.push(
+        new Match({
+          player1: remainingPlayers[i]._id,
+          player2: remainingPlayers[i + 1]._id,
+          round: 1,
+          isGivenBye: false,
+        })
+      );
     }
 
+    // Save matches to database
     const savedMatches = await Match.insertMany(matches);
 
     // Populate matches for response
@@ -60,7 +126,6 @@ export const scheduleMatches = async (req, res) => {
   }
 };
 
-// Get all matches
 export const getMatches = async (req, res) => {
   try {
     const matches = await Match.find()
@@ -108,7 +173,6 @@ export const updateMatch = async (req, res) => {
       .populate("player1", "name")
       .populate("player2", "name")
       .populate("winner", "name");
-
     res.status(200).json({ message: "Match updated", match: updatedMatch });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -165,31 +229,50 @@ export const scheduleNextRound = async (req, res) => {
     const byesNeeded = totalSlots - uniqueWinners.length;
 
     const shuffledWinners = uniqueWinners.sort(() => Math.random() - 0.5);
-    let winnerIndex = 0;
+    const byePlayers = getStructuredByePlayers(shuffledWinners, byesNeeded);
+
+    // Save shuffled winners to ShuffledPlayer collection
+    const shuffledPlayerDocs = shuffledWinners.map((player, index) => {
+      const isBye = byePlayers.includes(player);
+      const byeOrder = isBye ? byePlayers.indexOf(player) + 1 : 0;
+      return {
+        player: player._id,
+        name: player.name, // Store player's name
+        position: index + 1,
+        isBye,
+        byeOrder,
+        round: nextRound,
+      };
+    });
+    await ShuffledPlayer.insertMany(shuffledPlayerDocs);
+
+    const remainingWinners = shuffledWinners.filter(
+      (player) => !byePlayers.includes(player)
+    );
 
     // Assign byes and set winner immediately
-    for (let i = 0; i < byesNeeded; i++) {
-      const match = new Match({
-        player1: shuffledWinners[winnerIndex]._id,
-        player2: null,
-        round: nextRound,
-        isGivenBye: true,
-        winner: shuffledWinners[winnerIndex]._id,
-      });
-      matches.push(match);
-      winnerIndex++;
+    for (const player of byePlayers) {
+      matches.push(
+        new Match({
+          player1: player._id,
+          player2: null,
+          round: nextRound,
+          isGivenBye: true,
+          winner: player._id,
+        })
+      );
     }
 
     // Pair remaining winners
-    while (winnerIndex < shuffledWinners.length - 1) {
-      const match = new Match({
-        player1: shuffledWinners[winnerIndex]._id,
-        player2: shuffledWinners[winnerIndex + 1]._id,
-        round: nextRound,
-        isGivenBye: false,
-      });
-      matches.push(match);
-      winnerIndex += 2;
+    for (let i = 0; i < remainingWinners.length - 1; i += 2) {
+      matches.push(
+        new Match({
+          player1: remainingWinners[i]._id,
+          player2: remainingWinners[i + 1]._id,
+          round: nextRound,
+          isGivenBye: false,
+        })
+      );
     }
 
     const savedMatches = await Match.insertMany(matches);
@@ -199,7 +282,6 @@ export const scheduleNextRound = async (req, res) => {
       .populate("player1", "name")
       .populate("player2", "name")
       .populate("winner", "name");
-
     res.status(201).json({
       message: `Matches scheduled for Round ${nextRound}`,
       matches: populatedMatches,
@@ -212,6 +294,7 @@ export const scheduleNextRound = async (req, res) => {
 export const resetTournament = async (req, res) => {
   try {
     await Match.deleteMany({});
+    await ShuffledPlayer.deleteMany({}); // Clear ShuffledPlayer collection
     res.status(200).json({ message: "Tournament reset successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });

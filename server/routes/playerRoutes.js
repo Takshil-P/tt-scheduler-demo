@@ -1,5 +1,5 @@
 import express from "express";
-import { addPlayer, getPlayers } from "../controllers/playerController.js";
+import { addPlayer, getPlayers, getShuffledPlayers } from "../controllers/playerController.js";
 
 const router = express.Router();
 
@@ -8,5 +8,8 @@ router.post("/players", addPlayer);
 
 // Get all players
 router.get("/players", getPlayers);
+
+// Get shuffled players
+router.get("/shuffled-players", getShuffledPlayers);
 
 export default router;

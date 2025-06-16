@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 const AddPlayerForm = ({ onPlayerAdded }) => {
-  const [name, setName] = useState('');
-  const [rank, setRank] = useState('');
+  const [name, setName] = useState("");
+  const [rank, setRank] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://project-v1-2-1.onrender.com/api/players', {
+      const response = await axios.post("http://localhost:5050/api/players", {
         name,
         rank: rank ? Number(rank) : null,
       });
       onPlayerAdded(response.data.player);
-      setName('');
-      setRank('');
+      setName("");
+      setRank("");
     } catch (error) {
-      console.error('Error adding player:', error);
+      console.error("Error adding player:", error);
     }
   };
 
@@ -26,7 +26,10 @@ const AddPlayerForm = ({ onPlayerAdded }) => {
         Add Player
       </h3>
       <div className="mb-4">
-        <label htmlFor="name" className="block text-gray-700 dark:text-gray-100 font-medium mb-1">
+        <label
+          htmlFor="name"
+          className="block text-gray-700 dark:text-gray-100 font-medium mb-1"
+        >
           Player Name
         </label>
         <input
@@ -39,7 +42,10 @@ const AddPlayerForm = ({ onPlayerAdded }) => {
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="rank" className="block text-gray-700 dark:text-gray-100 font-medium mb-1">
+        <label
+          htmlFor="rank"
+          className="block text-gray-700 dark:text-gray-100 font-medium mb-1"
+        >
           Rank (Optional)
         </label>
         <input
