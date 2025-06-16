@@ -13,7 +13,7 @@ const MatchCard = ({ match, onWinnerSelected }) => {
     }
     try {
       const response = await axios.patch(
-        `https://project-v1-2-1.onrender.com/api/matches/${match._id}`,
+        `https://project-v1-2.onrender.com/api/matches/${match._id}`,
         {
           winnerId,
         }
