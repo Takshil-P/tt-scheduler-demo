@@ -3,6 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import PlayerList from "../components/PlayerList";
 import AddPlayerForm from "../components/AddPlayerForm";
+import DropAllPlayersButton from "../components/DropAllPlayersButton";
 
 const Scheduler = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const Scheduler = () => {
       <PlayerList />
       <AddPlayerForm onPlayerAdded={handlePlayerAdded} />
       <div className="text-center mt-6">
+        <DropAllPlayersButton />
         <button
           onClick={() => navigate("/table-tennis-scheduler")}
           className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 dark:hover:bg-teal-400 transition duration-200"

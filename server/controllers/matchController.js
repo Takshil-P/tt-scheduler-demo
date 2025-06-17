@@ -300,3 +300,16 @@ export const resetTournament = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const dropAllPlayers = async (req, res) => {
+  try {
+    // Delete all players from the Player collection
+    await Player.deleteMany({});
+    // Also reset matches and shuffled players to maintain consistency
+    await Match.deleteMany({});
+    await ShuffledPlayer.deleteMany({});
+    res.status(200).json({ message: "All players dropped and tournament reset successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

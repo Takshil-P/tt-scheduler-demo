@@ -5,6 +5,7 @@ import {
   updateMatch,
   scheduleNextRound,
   resetTournament,
+  dropAllPlayers,
 } from "../controllers/matchController.js";
 
 const router = express.Router();
@@ -23,5 +24,8 @@ router.post("/matches/next-round", scheduleNextRound);
 
 // Reset the tournament
 router.delete("/matches/reset", resetTournament);
+
+// Drop all players
+router.delete("/players/drop-all", dropAllPlayers);
 
 export default router;
