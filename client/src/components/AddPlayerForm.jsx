@@ -5,6 +5,9 @@ const AddPlayerForm = ({ onPlayerAdded }) => {
   const [name, setName] = useState("");
   const [rank, setRank] = useState("");
 
+
+  const isDemo = true; // 🔒 Prevent inputs for demo
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -40,6 +43,7 @@ const AddPlayerForm = ({ onPlayerAdded }) => {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          disabled={isDemo} // 🔒 Prevent inputs for demo
           className="w-full p-2 bg-white dark:bg-teal-900 border border-gray-300 dark:border-teal-700 rounded text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-400 transition duration-200"
           required
         />
@@ -56,11 +60,13 @@ const AddPlayerForm = ({ onPlayerAdded }) => {
           type="number"
           value={rank}
           onChange={(e) => setRank(e.target.value)}
+          disabled={isDemo} // 🔒 Prevent inputs for demo
           className="w-full p-2 bg-white dark:bg-teal-900 border border-gray-300 dark:border-teal-700 rounded text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-400 transition duration-200"
         />
       </div>
       <button
         type="submit"
+        disabled={isDemo} // 🔒 Prevent inputs for demo
         className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 dark:hover:bg-teal-300 transition duration-200"
       >
         Add Player
