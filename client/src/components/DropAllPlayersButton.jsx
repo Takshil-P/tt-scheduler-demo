@@ -6,6 +6,8 @@ const DropAllPlayersButton = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  const isDemo = true; // 🔒 Prevent inputs for demo
+
   const handleDropAllPlayers = async () => {
     if (window.confirm('Are you sure you want to drop all players? This action cannot be undone.')) {
       try {
@@ -23,6 +25,7 @@ const DropAllPlayersButton = () => {
     <div className="p-4">
       <button
         onClick={handleDropAllPlayers}
+        disabled={isDemo} // 🔒 Prevent inputs for demo
         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
       >
         Drop All Players
