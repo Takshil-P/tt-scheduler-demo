@@ -7,7 +7,7 @@ const PlayerList = () => {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const response = await axios.get("https://project-v1-2.onrender.com/api/players");
+        const response = await axios.get("https://tt-scheduler-demo-backend.onrender.com/api/players");
         setPlayers(response.data);
       } catch (error) {
         console.error("Error fetching players:", error);

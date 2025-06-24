@@ -12,7 +12,7 @@ const AddPlayerForm = ({ onPlayerAdded }) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://project-v1-2.onrender.com/api/players",
+        "https://tt-scheduler-demo-backend.onrender.com/api/players",
         {
           name,
           rank: rank ? Number(rank) : null,

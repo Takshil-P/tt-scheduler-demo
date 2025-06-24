@@ -9,7 +9,7 @@ const DropAllPlayersButton = () => {
   const handleDropAllPlayers = async () => {
     if (window.confirm('Are you sure you want to drop all players? This action cannot be undone.')) {
       try {
-        const response = await axios.delete('https://project-v1-2.onrender.com/api/players/drop-all');
+        const response = await axios.delete('https://tt-scheduler-demo-backend.onrender.com/api/players/drop-all');
         setMessage(response.data.message);
         setError('');
       } catch (err) {

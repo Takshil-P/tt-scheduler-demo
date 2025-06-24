@@ -12,7 +12,7 @@ const TableTennisScheduler = () => {
   const fetchMatches = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("https://project-v1-2.onrender.com/api/matches");
+      const response = await axios.get("https://tt-scheduler-demo-backend.onrender.com/api/matches");
       setMatches(response.data);
       const maxRound = Math.max(
         ...response.data.map((match) => match.round),
@@ -35,7 +35,7 @@ const TableTennisScheduler = () => {
   const startTournament = async () => {
     setLoading(true);
     try {
-      await axios.post("https://project-v1-2.onrender.com/api/matches/schedule");
+      await axios.post("https://tt-scheduler-demo-backend.onrender.com/api/matches/schedule");
       setTournamentWinner(null);
       setError("");
       await fetchMatches();
@@ -65,7 +65,7 @@ const TableTennisScheduler = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://project-v1-2.onrender.com/api/matches/next-round"
+        "https://tt-scheduler-demo-backend.onrender.com/api/matches/next-round"
       );
       if (response.data.message === "Tournament concluded") {
         setTournamentWinner(response.data.winner);
@@ -89,7 +89,7 @@ const TableTennisScheduler = () => {
   const resetTournament = async () => {
     setLoading(true);
     try {
-      await axios.delete("https://project-v1-2.onrender.com/api/matches/reset");
+      await axios.delete("https://tt-scheduler-demo-backend.onrender.com/api/matches/reset");
       setMatches([]);
       setCurrentRound(0);
       setTournamentWinner(null);
