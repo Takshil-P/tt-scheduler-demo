@@ -6,7 +6,7 @@ const AddPlayerForm = ({ onPlayerAdded }) => {
   const [rank, setRank] = useState("");
 
 
-  const isDemo = true; // 🔒 Prevent inputs for demo
+  const isDemo = true; // 🔒 Prevent inputs for demo purpose only
 
   const handleSubmit = async (e) => {
     e.preventDefault();
